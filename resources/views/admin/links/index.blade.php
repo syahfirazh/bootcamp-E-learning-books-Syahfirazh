@@ -30,6 +30,7 @@
         </div>
         
         <!-- TOMBOL TAMBAH BUKU -->
+        {{-- Navigasi ke halaman formulir pendaftaran buku baru --}}
         <a href="{{ route('admin.links.create') }}"
            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-3 px-5 rounded-xl shadow-md shadow-blue-600/25 hover:shadow-lg transition-all flex items-center justify-center gap-2 text-xs">
             <i data-lucide="plus" class="w-4 h-4 stroke-[2.5]"></i>
@@ -50,6 +51,7 @@
 
         <!-- TABLE BODY -->
         <div class="divide-y divide-slate-200/70 bg-white/60">
+            {{-- Logika Looping: Perulangan koleksi $links yang dikirim dari LinkController --}}
             @forelse($links as $link)
                 <!-- GRID ROW -->
                 <div class="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-4 items-start lg:items-center p-4 sm:p-5 hover:bg-blue-50/50 transition-all group">
@@ -58,9 +60,11 @@
                     <div class="lg:col-span-5 flex items-center space-x-3.5 w-full min-w-0">
                         <!-- THUMBNAIL COVER BUKU (Style Portrait 3:4) -->
                         <div class="flex-shrink-0 h-16 w-12 bg-slate-100 border border-slate-300 rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow flex items-center justify-center relative">
+                            {{-- Pengecekan ketersediaan file cover/sampul pada storage --}}
                             @if($link->image)
                                 <img src="{{ asset('storage/' . $link->image) }}" alt="{{ $link->title }}" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300">
                             @else
+                                {{-- Placeholder gambar default jika buku belum memiliki cover --}}
                                 <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-amber-50 text-blue-600/50">
                                     <i data-lucide="book-marked" class="w-5 h-5"></i>
                                 </div>
@@ -73,7 +77,8 @@
                             </h2>
                             <div class="text-xs font-semibold text-slate-500 truncate mt-1 flex items-center gap-1.5">
                                 <i data-lucide="link-2" class="w-3.5 h-3.5 text-blue-500 shrink-0"></i>
-                                <span class="truncate">{{ $link->url }}</span>
+                                {{-- Menampilkan lokasi path berkas PDF yang tersimpan --}}
+                                <span class="truncate">{{ $link->pdf_file }}</span>
                             </div>
                         </div>
                     </div>
@@ -83,6 +88,7 @@
                         <!-- 2. STATUS -->
                         <div class="lg:col-span-2 flex flex-col lg:flex-row items-start lg:items-center flex-1">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 lg:hidden">Status</span>
+                            {{-- Pengecekan status publikasi (is_active) --}}
                             @if($link->is_active)
                                 <span class="px-3 py-1 inline-flex text-xs font-extrabold rounded-lg bg-emerald-100/80 text-emerald-800 border border-emerald-300/60 items-center gap-1.5 whitespace-nowrap shadow-sm">
                                     <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Publik
@@ -99,6 +105,7 @@
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 lg:hidden">Total Unduh</span>
                             <div class="inline-flex items-center px-3 py-1 rounded-xl bg-amber-50/80 border border-amber-200/80 text-xs font-extrabold text-slate-800 whitespace-nowrap gap-1.5 shadow-sm">
                                 <i data-lucide="download-cloud" class="w-3.5 h-3.5 text-blue-600"></i>
+                                {{-- Menampilkan jumlah akumulasi unduhan dengan pemisah ribuan --}}
                                 <span>{{ number_format($link->clicks) }}</span>
                                 <span class="text-slate-500 font-semibold text-[11px]">Unduhan</span>
                             </div>
@@ -109,17 +116,20 @@
                     <div class="lg:col-span-2 flex items-center justify-start lg:justify-end gap-2 w-full lg:w-auto mt-2 lg:mt-0 pt-3 lg:pt-0 border-t border-slate-200/60 lg:border-none">
 
                         <!-- TOMBOL EDIT -->
+                        {{-- Mengarahkan ke form penyuntingan berdasarkan ID buku --}}
                         <a href="{{ route('admin.links.edit', $link->id) }}"
                            class="flex-1 lg:flex-none text-center px-3.5 py-2 bg-white hover:bg-blue-50 text-slate-800 hover:text-blue-600 rounded-xl border border-slate-300 text-xs font-extrabold transition-all shadow-sm flex items-center justify-center gap-1.5">
                             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edit
                         </a>
 
                         <!-- FORM HAPUS -->
+                        {{-- Mengirimkan permintaan DELETE untuk menghapus data dari database & storage --}}
                         <form action="{{ route('admin.links.destroy', $link->id) }}"
                               method="POST"
                               class="flex-1 lg:flex-none m-0"
                               onsubmit="return confirm('Apakah Anda yakin ingin menghapus buku ini? File cover dan tautan akan dihapus secara permanen.');">
                             @csrf
+                            {{-- Method Spoofing untuk mengirim metode HTTP DELETE secara aman --}}
                             @method('DELETE')
 
                             <button type="submit"
@@ -132,6 +142,7 @@
                 </div>
             @empty
                 <!-- EMPTY STATE -->
+                {{-- Tampilan alternatif jika koleksi buku masih kosong --}}
                 <div class="px-6 py-16 text-center">
                     <div class="flex flex-col items-center justify-center max-w-sm mx-auto p-8 bg-white/80 rounded-3xl border border-dashed border-slate-300 shadow-sm">
                         <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-3">
@@ -149,8 +160,10 @@
         </div>
 
         <!-- PAGINATION SECTION -->
+        {{-- Memeriksa apakah data memiliki halaman tambahan (pagination) --}}
         @if($links->hasPages())
             <div class="bg-slate-100/70 border-t border-slate-200/80 px-6 py-4">
+                {{-- Render kustom link pagination --}}
                 {{ $links->links('vendor.pagination.custom') }}
             </div>
         @endif

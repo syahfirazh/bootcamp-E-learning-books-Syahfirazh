@@ -12,9 +12,9 @@ class PublicController extends Controller
     public function index(): View
     {
         $links = Link::where('is_active', true)
-                     ->latest()
-                     ->paginate(10);
-
+                     ->latest() #(Diurutkan berdasarkan waktu ditambahkan terbaru)
+                     ->paginate(10); 
+                    #'paginate(10)' (Dibatasi 10 data per halaman untuk fungsionalitas pagination)
         return view('public.index', compact('links'));
     }
 

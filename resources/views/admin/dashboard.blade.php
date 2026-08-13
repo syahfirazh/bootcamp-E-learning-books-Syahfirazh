@@ -24,6 +24,7 @@
             </h1>
             <p class="text-xs font-semibold text-slate-500 mt-1">Ringkasan statistik koleksi & aktivitas unduhan e-book perpustakaan Anda.</p>
         </div>
+        {{-- Tombol navigasi cepat ke halaman pengelolaan katalog buku --}}
         <a href="{{ route('admin.links.index') }}" class="hidden sm:inline-flex bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-md shadow-blue-600/25 transition-all active:scale-95 items-center gap-2 text-xs">
             Kelola Buku Digital <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
@@ -40,6 +41,7 @@
             <i data-lucide="book-open" class="w-24 h-24 text-blue-500/5 absolute -bottom-6 -right-6 group-hover:scale-110 transition-transform"></i>
             <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-1 relative z-10">Total Koleksi Buku</h3>
             <div class="flex items-baseline gap-2 relative z-10">
+                {{-- Logika Pencetakan Data: Menampilkan total seluruh buku dan total yang berstatus aktif/terpublikasi --}}
                 <span class="text-4xl font-extrabold text-slate-900">{{ $totalLinks }}</span>
                 <span class="text-xs font-bold text-slate-500">({{ $activeLinks }} Terpublikasi)</span>
             </div>
@@ -52,6 +54,7 @@
             </div>
             <i data-lucide="download-cloud" class="w-24 h-24 text-emerald-500/5 absolute -bottom-6 -right-6 group-hover:scale-110 transition-transform"></i>
             <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-1 relative z-10">Total Unduhan PDF</h3>
+            {{-- Logika Format Angka: Memformat akumulasi angka klik/unduhan dengan pemisah ribuan --}}
             <span class="text-4xl font-extrabold text-slate-900 relative z-10">{{ number_format($totalClicks) }}</span>
         </div>
 
@@ -62,12 +65,14 @@
             </div>
             <i data-lucide="trophy" class="w-24 h-24 text-amber-500/5 absolute -bottom-6 -right-6 group-hover:scale-110 transition-transform"></i>
             <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-1 relative z-10">Buku Terfavorit</h3>
+            {{-- Logika Kondisional: Mengecek apakah terdapat data buku dengan unduhan terbanyak ($topLink) --}}
             @if($topLink)
                 <p class="text-lg font-extrabold text-slate-900 relative z-10 truncate mb-1" title="{{ $topLink->title }}">{{ $topLink->title }}</p>
                 <p class="text-xs font-bold text-amber-800 bg-amber-100/80 border border-amber-200 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg relative z-10">
                     <i data-lucide="arrow-down-to-line" class="w-3 h-3"></i> {{ number_format($topLink->clicks) }} Unduhan
                 </p>
             @else
+                {{-- Tampilan fallback jika belum ada data transaksi unduhan di database --}}
                 <p class="text-lg font-extrabold text-slate-400 relative z-10">Belum ada data</p>
             @endif
         </div>
@@ -86,6 +91,7 @@
                 </h3>
             </div>
             
+            {{-- Container Canvas Chart.js --}}
             <div class="relative w-full h-72">
                 <canvas id="barChart"></canvas>
             </div>
@@ -100,6 +106,7 @@
                 </h3>
             </div>
             
+            {{-- Container Canvas Chart.js --}}
             <div class="relative w-full h-72 flex justify-center items-center">
                 <canvas id="doughnutChart"></canvas>
             </div>
@@ -113,20 +120,20 @@
 <!-- ========================================== -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Menyuntikkan Data PHP ke JavaScript
+    // Logika Konversi Data: Mengubah array PHP ($chartLabels & $chartData) menjadi format JSON yang dapat dibaca JavaScript
     const chartLabels = @json($chartLabels);
     const chartData = @json($chartData);
 
-    // Palet Warna Aesthetic Soft Modern (Blue, Emerald, Amber, Rose, Indigo)
+    // Konfigurasi Palet Warna Grafik
     const bgColors = ['#3b82f6', '#10b981', '#f59e0b', '#f43f5e', '#6366f1'];
     const hoverBgColors = ['#2563eb', '#059669', '#d97706', '#e11d48', '#4f46e5'];
 
-    // Konfigurasi Global Font
+    // Konfigurasi Font bawaan Chart.js
     Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
     Chart.defaults.font.weight = 'bold';
     Chart.defaults.color = '#64748b';
 
-    // 1. BAR CHART INISIALISASI
+    // 1. Logika Inisialisasi Bar Chart (Grafik Batang)
     const ctxBar = document.getElementById('barChart').getContext('2d');
     new Chart(ctxBar, {
         type: 'bar',
@@ -169,7 +176,7 @@
         }
     });
 
-    // 2. DOUGHNUT CHART INISIALISASI
+    // 2. Logika Inisialisasi Doughnut Chart (Grafik Lingkaran)
     const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
     new Chart(ctxDoughnut, {
         type: 'doughnut',

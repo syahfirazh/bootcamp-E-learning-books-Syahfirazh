@@ -43,13 +43,16 @@
         <!-- Form Container Card -->
         <div class="bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xl shadow-slate-200/60">
 
+            {{-- Mengirimkan kredensial login via metode HTTP POST ke rute 'login.post' --}}
             <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
+                {{-- Token pengaman CSRF untuk mencegah serangan Cross-Site Request Forgery --}}
                 @csrf
 
-                <!-- Display Alert Error -->
+                {{-- Logika Pengecekan Error: Menampilkan pesan peringatan jika validasi kredensial gagal --}}
                 @if($errors->any())
                     <div class="bg-rose-50 border border-rose-200/80 p-3.5 rounded-xl flex items-start gap-3 shadow-sm">
                         <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600 shrink-0 mt-0.5"></i>
+                        {{-- Menampilkan pesan kesalahan pertama dari session $errors --}}
                         <p class="text-xs font-bold text-rose-700 leading-snug">{{ $errors->first() }}</p>
                     </div>
                 @endif
@@ -59,6 +62,7 @@
                     <label for="email" class="block text-xs font-extrabold text-slate-800 uppercase tracking-wider">Alamat Email</label>
                     <div class="relative">
                         <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                        {{-- Mengembalikan input email sebelumnya jika terjadi kegagalan via fungsi old('email') --}}
                         <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus placeholder="admin@library.id"
                                class="w-full pl-10 pr-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 font-bold text-slate-800 text-xs transition-all placeholder:text-slate-400 shadow-sm">
                     </div>
@@ -69,6 +73,7 @@
                     <label for="password" class="block text-xs font-extrabold text-slate-800 uppercase tracking-wider">Kata Sandi</label>
                     <div class="relative">
                         <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                        {{-- Input kata sandi terlindungi tanpa menyimpan nilai 'old' demi alasan keamanan --}}
                         <input type="password" id="password" name="password" required placeholder="••••••••"
                                class="w-full pl-10 pr-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 font-bold text-slate-800 text-xs transition-all placeholder:text-slate-400 shadow-sm">
                     </div>
@@ -76,6 +81,7 @@
 
                 <!-- Submit Button -->
                 <div class="pt-2">
+                    {{-- Tombol submit untuk memicu eksekusi pengiriman form ke AuthController --}}
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold py-3 rounded-xl shadow-md shadow-blue-600/25 transition-all flex items-center justify-center gap-2 text-xs">
                         <span>Masuk Dashboard</span>
                         <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.5]"></i>
@@ -87,6 +93,7 @@
     </div>
 
     <script>
+        // Menginisialisasi ikon Lucide pada halaman
         lucide.createIcons();
     </script>
 </body>

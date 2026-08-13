@@ -21,6 +21,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/90 backdrop-blur-md p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-md shadow-slate-200/50">
         <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                {{-- Tombol navigasi kembali ke halaman daftar koleksi buku --}}
                 <a href="{{ route('admin.links.index') }}" class="bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 p-2 rounded-xl border border-slate-200/80 transition-all shadow-sm">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                 </a>
@@ -33,15 +34,18 @@
     <!-- Container Form Utama -->
     <div class="bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200/90 shadow-lg shadow-slate-200/60 p-6 sm:p-8">
 
-        <!-- Form dengan Enctype Multipart -->
+        {{-- Form pengiriman data dengan enctype multipart/form-data wajib untuk mendukung pengunggahan berkas PDF & Cover --}}
         <form action="{{ route('admin.links.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            {{-- Token pengaman CSRF --}}
             @csrf
 
             <!-- Field 1: Judul Buku -->
             <div class="space-y-2">
                 <label for="title" class="block text-xs font-extrabold text-slate-800 uppercase tracking-wider">Judul Buku Digital <span class="text-rose-500">*</span></label>
+                {{-- Input teks judul buku dengan fitur old('title') untuk mempertahankan input jika validasi server gagal --}}
                 <input type="text" id="title" name="title" value="{{ old('title') }}" placeholder="Contoh: Pemrograman Web dengan Laravel 11" required
                        class="w-full px-4 py-3 bg-slate-50/80 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 font-bold text-slate-800 placeholder-slate-400 text-sm transition-all shadow-sm">
+                {{-- Menampilkan umpan balik error validasi khusus untuk field judul --}}
                 @error('title')
                     <p class="text-xs font-bold text-rose-600 flex items-center gap-1 mt-1">
                         <i data-lucide="circle-alert" class="w-3.5 h-3.5"></i> {{ $message }}
@@ -54,8 +58,10 @@
                 <label for="pdf_file" class="block text-xs font-extrabold text-slate-800 uppercase tracking-wider">Berkas E-Book (PDF) <span class="text-rose-500">*</span></label>
                 
                 <div class="relative">
+                    {{-- Native input file PDF disembunyikan; memicu fungsi JavaScript handlePdfSelect() saat file dipilih --}}
                     <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required class="hidden" onchange="handlePdfSelect(this)">
                     
+                    {{-- Custom trigger label untuk menggantikan tampilan tombol file bawaan browser --}}
                     <label for="pdf_file" class="flex items-center justify-between px-4 py-3 bg-slate-50/80 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 hover:border-blue-400 transition-all shadow-sm">
                         <div class="flex items-center gap-3 min-w-0">
                             <div class="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 border border-rose-200/60 flex items-center justify-center shrink-0">
@@ -69,6 +75,7 @@
                     </label>
                 </div>
 
+                {{-- Menampilkan pesan error validasi jika berkas PDF tidak valid atau melebihi kapasitas limit --}}
                 @error('pdf_file')
                     <p class="text-xs font-bold text-rose-600 flex items-center gap-1 mt-1">
                         <i data-lucide="circle-alert" class="w-3.5 h-3.5"></i> {{ $message }}
@@ -92,6 +99,7 @@
                     </div>
 
                     <!-- Area Pratinjau Terisi (State Aktif) -->
+                    {{-- Container JS yang akan dimunculkan saat gambar cover diunggah oleh user --}}
                     <div id="preview-filled" class="hidden">
                         <div class="p-4 bg-slate-100 flex items-center justify-center">
                             <img id="preview-img" src="" alt="Pratinjau Berkas" class="max-h-60 object-contain rounded-lg border border-slate-200 shadow-md">
@@ -108,6 +116,7 @@
                 <!-- Native Input File (Disembunyikan) -->
                 <input type="file" id="image" name="image" accept="image/*" class="hidden">
 
+                {{-- Menampilkan pesan kesalahan jika terjadi eror validasi gambar --}}
                 @error('image')
                     <p class="text-xs font-bold text-rose-600 flex items-center gap-1 mt-1">
                         <i data-lucide="circle-alert" class="w-3.5 h-3.5"></i> {{ $message }}
@@ -128,6 +137,7 @@
                                 <span id="is_active_hint" class="text-[11px] font-semibold text-slate-500">Buku akan langsung dapat diunduh di perpustakaan</span>
                             </div>
                         </div>
+                        {{-- Checkbox status publikasi; aktif (checked) secara default untuk pembuatan buku baru --}}
                         <input type="checkbox" id="is_active" name="is_active" class="sr-only peer" checked>
                         <span class="relative w-11 h-6 bg-slate-300 peer-checked:bg-emerald-500 rounded-full border border-slate-300 transition-colors shrink-0 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:w-5 after:h-5 after:bg-white after:rounded-full after:border after:border-slate-300 transition-transform peer-checked:after:translate-x-5 shadow-inner"></span>
                     </div>
@@ -139,6 +149,7 @@
                 <a href="{{ route('admin.links.index') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold py-2.5 px-5 rounded-xl border border-slate-200 text-xs transition-all">
                     Batal
                 </a>
+                {{-- Tombol submit untuk mengeksekusi penyimpanan data baru ke LinkController --}}
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 px-6 rounded-xl shadow-md shadow-blue-600/25 flex items-center gap-2 text-xs transition-all active:scale-95">
                     <i data-lucide="check" class="w-4 h-4 stroke-[2.5]"></i> Simpan Buku
                 </button>
@@ -150,7 +161,7 @@
 <!-- Script Eksternal & Inline Helper -->
 <script src="{{ asset('js/image-preview.js') }}"></script>
 <script>
-    // Fungsi menampilkan nama berkas PDF yang dipilih
+    // Logika JavaScript: Memperbarui nama file PDF pada UI saat user memilih file
     function handlePdfSelect(input) {
         const fileNameTarget = document.getElementById('pdf-filename');
         if (input.files && input.files[0]) {
@@ -164,6 +175,7 @@
         }
     }
 
+    // Logika JavaScript: Menyesuaikan teks petunjuk (hint) status publikasi berdasarkan toggle checkbox
     document.addEventListener('DOMContentLoaded', function () {
         const toggle = document.getElementById('is_active');
         const hint = document.getElementById('is_active_hint');

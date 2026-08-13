@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div align="center">
 
   <!-- BADGES STATIS -->
@@ -100,3 +101,6 @@ Berikut adalah dokumentasi tampilan antarmuka sistem yang telah dikustomisasi:
    ```bash
    git clone [https://github.com/username/repository-name.git](https://github.com/username/repository-name.git)
    cd repository-name
+=======
+# bootcamp-E-learning-books-Syahfirazh
+>>>>>>> f201de88ff7af7f4c64cabd3ba10d696d0db6204

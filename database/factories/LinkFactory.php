@@ -16,7 +16,7 @@ class LinkFactory extends Factory{
     public function definition(): array{
         return [
             'title'     => $this->faker->words(3, true),
-            'url'       => $this->faker->url(),
+            'pdf_file' => 'books_pdf/sample.pdf', // <-- Diubah ke 'pdf_file'
             'image'     => null, // Gambar diset null terlebih dahulu untuk dummy
             'is_active' => $this->faker->boolean(80), // 80% kemungkinan bernilai true
             'clicks'    => $this->faker->numberBetween(0, 250),

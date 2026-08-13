@@ -21,6 +21,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/90 backdrop-blur-md p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-md shadow-slate-200/50">
         <div>
             <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                {{-- Tombol navigasi kembali ke daftar tabel buku --}}
                 <a href="{{ route('admin.links.index') }}" class="bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 p-2 rounded-xl border border-slate-200/80 transition-all shadow-sm">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                 </a>
@@ -33,15 +34,20 @@
     <!-- Container Form Utama -->
     <div class="bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200/90 shadow-lg shadow-slate-200/60 p-6 sm:p-8">
 
+        {{-- Form pengiriman data update dengan atribut enctype untuk mendukung pengunggahan berkas baru --}}
         <form action="{{ route('admin.links.update', $link->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            {{-- Token proteksi keamanan CSRF --}}
             @csrf
+            {{-- Method Spoofing: Mengubah metode POST menjadi PUT sesuai standar RESTful API Laravel untuk pembaruan data --}}
             @method('PUT')
 
             <!-- Field: Judul Buku -->
             <div class="space-y-2">
                 <label for="title" class="block text-xs font-extrabold text-slate-800 uppercase tracking-wider">Judul Buku Digital <span class="text-rose-500">*</span></label>
+                {{-- Logika Value: Menampilkan data lama dari old('title') atau dari instance model $link->title jika belum ada input baru --}}
                 <input type="text" id="title" name="title" value="{{ old('title', $link->title) }}" required
                        class="w-full px-4 py-3 bg-slate-50/80 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 font-bold text-slate-800 placeholder-slate-400 text-sm transition-all shadow-sm">
+                {{-- Menampilkan pesan validasi jika terjadi kesalahan input pada judul --}}
                 @error('title')
                     <p class="text-xs font-bold text-rose-600 flex items-center gap-1 mt-1"><i data-lucide="circle-alert" class="w-3.5 h-3.5"></i> {{ $message }}</p>
                 @enderror
@@ -59,9 +65,11 @@
                         </div>
                         <div class="min-w-0">
                             <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Berkas PDF Saat Ini:</p>
+                            {{-- Logika String: Mengambil nama file asli dari path storage menggunakan fungsi PHP basename() --}}
                             <p class="text-xs font-bold text-slate-800 truncate">{{ basename($link->pdf_file) }}</p>
                         </div>
                     </div>
+                    {{-- Tautan pratinjau untuk membuka file PDF yang tersimpan saat ini di tab baru --}}
                     <a href="{{ asset('storage/' . $link->pdf_file) }}" target="_blank" class="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 text-xs font-bold shrink-0 transition-all shadow-sm flex items-center gap-1">
                         <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Lihat
                     </a>
@@ -69,6 +77,7 @@
 
                 <!-- Input Upload PDF Baru -->
                 <div class="relative">
+                    {{-- Input berkas PDF opsional; memicu fungsi JS handlePdfSelect() saat berkas baru dipilih --}}
                     <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" class="hidden" onchange="handlePdfSelect(this)">
                     
                     <label for="pdf_file" class="flex items-center justify-between px-4 py-3 bg-slate-50/80 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 hover:border-blue-400 transition-all shadow-sm">
@@ -84,6 +93,7 @@
                     </label>
                 </div>
 
+                {{-- Menampilkan pesan validasi jika file PDF yang diunggah tidak sesuai ketentuan --}}
                 @error('pdf_file')
                     <p class="text-xs font-bold text-rose-600 flex items-center gap-1 mt-1"><i data-lucide="circle-alert" class="w-3.5 h-3.5"></i> {{ $message }}</p>
                 @enderror
@@ -97,9 +107,11 @@
                 <div class="p-3.5 border border-slate-200 rounded-xl bg-slate-50/80 flex items-center gap-4 shadow-sm">
                     <div class="shrink-0">
                         <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Cover Saat Ini:</p>
+                        {{-- Logika Kondisional: Mengecek apakah buku sudah memiliki file cover terpasang --}}
                         @if($link->image)
                             <img src="{{ asset('storage/' . $link->image) }}" class="h-16 w-12 object-cover border border-slate-300 rounded-lg shadow-sm" alt="Cover Saat Ini">
                         @else
+                            {{-- Tampilan fallback icon jika belum ada cover --}}
                             <div class="h-16 w-12 bg-slate-200 border border-slate-300 rounded-lg flex items-center justify-center text-slate-400">
                                 <i data-lucide="book" class="w-6 h-6"></i>
                             </div>
@@ -128,6 +140,7 @@
                         </div>
                     </div>
 
+                    {{-- Container pratinjau gambar baru yang dipilih oleh user --}}
                     <div id="preview-filled" class="hidden">
                         <div class="p-4 bg-slate-100 flex items-center justify-center">
                             <img id="preview-img" src="" class="max-h-52 object-contain rounded-lg border border-slate-200 shadow-md" alt="Pratinjau Cover Baru">
@@ -159,6 +172,7 @@
                             </div>
                         </div>
 
+                        {{-- Logika Checked: Menentukan status centang (checked) berdasarkan old('is_active') atau nilai bawaan $link->is_active --}}
                         <input type="checkbox" id="is_active" name="is_active" class="sr-only peer" {{ old('is_active', $link->is_active) ? 'checked' : '' }}>
                         <span class="relative w-11 h-6 bg-slate-300 peer-checked:bg-emerald-500 rounded-full border border-slate-300 transition-colors shrink-0 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:w-5 after:h-5 after:bg-white after:rounded-full after:border after:border-slate-300 transition-transform peer-checked:after:translate-x-5 shadow-inner"></span>
                     </div>
@@ -168,6 +182,7 @@
             <!-- Action Buttons -->
             <div class="pt-4 flex justify-end gap-3 border-t border-slate-200/80">
                 <a href="{{ route('admin.links.index') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold py-2.5 px-5 rounded-xl border border-slate-200 text-xs transition-all">Batal</a>
+                {{-- Tombol submit untuk mengeksekusi aksi update --}}
                 <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-6 rounded-xl shadow-md shadow-emerald-600/25 flex items-center gap-2 text-xs transition-all active:scale-95">
                     <i data-lucide="check-circle-2" class="w-4 h-4 stroke-[2.5]"></i> Simpan Perubahan
                 </button>
@@ -178,7 +193,7 @@
 
 <script src="{{ asset('js/image-preview.js') }}"></script>
 <script>
-    // Fungsi menampilkan nama berkas PDF baru yang dipilih
+    // Logika JavaScript: Menampilkan nama berkas PDF baru yang dipilih oleh user secara real-time
     function handlePdfSelect(input) {
         const fileNameTarget = document.getElementById('pdf-filename');
         if (input.files && input.files[0]) {
@@ -192,6 +207,7 @@
         }
     }
 
+    // Logika JavaScript: Mengubah petunjuk/hint status publikasi berdasarkan toggle checkbox
     document.addEventListener('DOMContentLoaded', function () {
         const toggle = document.getElementById('is_active');
         const hint = document.getElementById('is_active_hint');
